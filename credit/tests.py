@@ -19,6 +19,7 @@ class CreditAPITestCase(TestCase):
         )
 
     def test_register_customer(self):
+        # Test successful customer registration
         data = {
             "first_name": "Jane",
             "last_name": "Doe",
@@ -31,6 +32,7 @@ class CreditAPITestCase(TestCase):
         self.assertTrue(Customer.objects.filter(phone_number="8888888888").exists())
 
     def test_register_customer_missing_field(self):
+        # Test registration fails if a required field is missing
         data = {
             "first_name": "Jane",
             # "last_name" is missing
@@ -43,6 +45,7 @@ class CreditAPITestCase(TestCase):
         self.assertIn('last_name', response.data)
 
     def test_check_eligibility(self):
+        # Test loan eligibility check for a valid customer
         data = {
             "customer_id": self.customer.id,
             "loan_amount": 100000,
@@ -54,6 +57,7 @@ class CreditAPITestCase(TestCase):
         self.assertIn('approval', response.data)
 
     def test_create_loan(self):
+        # Test creating a loan for a valid customer
         data = {
             "customer_id": self.customer.id,
             "loan_amount": 100000,
@@ -67,6 +71,7 @@ class CreditAPITestCase(TestCase):
             self.assertIsNotNone(response.data['loan_id'])
 
     def test_view_loan(self):
+        # Test viewing a specific loan by loan ID
         loan = Loan.objects.create(
             customer=self.customer,
             loan_amount=100000,
@@ -83,11 +88,13 @@ class CreditAPITestCase(TestCase):
         self.assertEqual(response.data['id'], loan.id)
 
     def test_view_loan_not_found(self):
+        # Test viewing a loan that does not exist returns 404
         response = self.client.get(reverse('view-loan', args=[9999]))
         self.assertEqual(response.status_code, 404)
         self.assertIn('detail', response.data)
 
     def test_view_loans(self):
+        # Test viewing all loans for a customer
         Loan.objects.create(
             customer=self.customer,
             loan_amount=100000,
@@ -105,6 +112,7 @@ class CreditAPITestCase(TestCase):
         self.assertGreaterEqual(len(response.data), 1)
 
     def test_view_loans_customer_not_found(self):
+        # Test viewing loans for a customer that does not exist returns 404
         response = self.client.get(reverse('view-loans', args=[9999]))
         self.assertEqual(response.status_code, 404)
         self.assertIn('detail', response.data)
