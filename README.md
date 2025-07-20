@@ -208,6 +208,3 @@ docker-compose exec web python manage.py test credit
   - **Tests**: Comprehensive unit tests in `credit/tests.py`
 - Responsibilities are clearly separated for maintainability and scalability.
 
-## Video Script: Automated Setup (Migrations, Static Files, Data Ingestion)
-
-“One of the strengths of this project is its fully automated setup. When I run `docker-compose up --build`, the backend container automatically applies all database migrations, collects static files for the Django admin, and triggers the data ingestion task if the Excel files are present. This is handled by a custom entrypoint script and a Django management command. The Celery worker, also started by Docker Compose, processes the ingestion in the background. This means the entire stack—including database setup, admin styling, and initial data loading—can be brought up with a single command, making the project easy to deploy, test, and share.”
