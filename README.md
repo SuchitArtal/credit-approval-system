@@ -15,7 +15,7 @@ A robust, production-ready backend for a Credit Approval System built with Djang
 
 ### 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/SuchitArtal/credit-approval-system
 cd alemeno
 ```
 
