@@ -6,6 +6,7 @@ A robust, production-ready backend for a Credit Approval System built with Djang
 - **Django 4+** and **DRF** for scalable REST APIs
 - **PostgreSQL** for reliable data storage
 - **Dockerized**: The entire application (Django, PostgreSQL, Redis, Celery worker) runs from a single `docker-compose up --build` command
+- **Automated setup**: Migrations, static file collection, and data ingestion are all triggered automatically when the container starts
 - **Celery + Redis** for background tasks (data ingestion)
 - **Modular, well-organized codebase** with clear separation of concerns (models, serializers, views, tasks, tests)
 - **Comprehensive unit tests** for all major endpoints (see `credit/tests.py`)
@@ -25,6 +26,7 @@ docker-compose up --build
 - The API will be available at `http://localhost:8000/`
 - The PostgreSQL database will be available at `localhost:5432`
 - Redis and Celery worker are started automatically
+- **Migrations, static file collection, and Excel data ingestion are all run automatically on container startup**
 
 ### 3. Apply Migrations & Create Superuser
 ```bash
@@ -42,20 +44,12 @@ docker-compose exec web python manage.py collectstatic --noinput
 - Log in with your superuser credentials
 
 ### 6. Data Ingestion (Excel to Database)
-- Place your `customer_data.xlsx` and `loan_data.xlsx` files in the project root.
-- Start a Celery worker in a new terminal:
-  ```bash
-  docker-compose exec web celery -A credit_approval_system worker --loglevel=info
-  ```
-- In another terminal, open the Django shell:
-  ```bash
-  docker-compose exec web python manage.py shell
-  ```
-  Then run:
-  ```python
-  from credit.tasks import ingest_customer_and_loan_data
-  ingest_customer_and_loan_data('/app/customer_data.xlsx', '/app/loan_data.xlsx')
-  ```
+- Place your `customer_data.xlsx` and `loan_data.xlsx` files in the project root **before running Docker Compose**.
+- When you run `docker-compose up --build`, the backend will automatically:
+  - Apply migrations
+  - Collect static files
+  - Trigger the data ingestion task (if the Excel files are present)
+- The Celery worker is started automatically and will process the ingestion in the background.
 - Refresh the Django admin to see ingested data.
 
 ### 7. Run Unit Tests
@@ -213,3 +207,7 @@ docker-compose exec web python manage.py test credit
   - **Tasks**: Background ingestion logic in `credit/tasks.py`
   - **Tests**: Comprehensive unit tests in `credit/tests.py`
 - Responsibilities are clearly separated for maintainability and scalability.
+
+## Video Script: Automated Setup (Migrations, Static Files, Data Ingestion)
+
+“One of the strengths of this project is its fully automated setup. When I run `docker-compose up --build`, the backend container automatically applies all database migrations, collects static files for the Django admin, and triggers the data ingestion task if the Excel files are present. This is handled by a custom entrypoint script and a Django management command. The Celery worker, also started by Docker Compose, processes the ingestion in the background. This means the entire stack—including database setup, admin styling, and initial data loading—can be brought up with a single command, making the project easy to deploy, test, and share.”

@@ -9,6 +9,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 COPY . .
 
-CMD ["gunicorn", "credit_approval_system.wsgi:application", "--bind", "0.0.0.0:8000"] 
+ENTRYPOINT ["/entrypoint.sh"] 
